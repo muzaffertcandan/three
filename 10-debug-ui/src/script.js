@@ -11,6 +11,12 @@ console.log(dat);
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
 
+
+/*
+DEBUG 
+*/
+const gui = new dat.GUI()
+
 // Scene
 const scene = new THREE.Scene()
 
@@ -20,7 +26,24 @@ const scene = new THREE.Scene()
 const geometry = new THREE.BoxGeometry(1, 1, 1)
 const material = new THREE.MeshBasicMaterial({ color: 0xff0000 })
 const mesh = new THREE.Mesh(geometry, material)
+mesh.visible = false
 scene.add(mesh)
+
+//DEBUG
+//gui objectlerle çalışıyor
+gui
+.add(mesh.position, 'x')
+.min(-3)
+.max(3)
+.step(0.01)
+.name("kırmızı küp X")
+// gui.add(mesh.position, 'y',-3,3,0.01)
+// gui.add(mesh.position, 'z',-3,3,0.01)
+gui
+.add(mesh, 'visible')
+gui
+.add(material, 'wireframe')
+
 
 /**
  * Sizes
