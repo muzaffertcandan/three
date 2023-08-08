@@ -1,40 +1,28 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-import gsap from 'gsap'
-import * as dat from 'dat.gui';
 
 
 
-console.log(dat);
+// console.log(imageSource);
+THREE.ColorManagement.enabled = false
 
+/*
+TEXTURES
+*/
+const image = new Image()
+const texture = new THREE.Texture(image)
+
+image.onload = ()=>{
+texture.needsUpdate = true
+}
+
+image.src ='/textures/door/color.jpg'
 /**
  * Base
  */
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
 
-
-/*
-DEBUG 
-*/
-const gui = new dat.GUI()
-
- 
-//debug ui
-const parameters = {
-    color: 0xff000,
-    spin: () =>{
-        gsap.to(mesh.rotation,  { duration:1, y: mesh.rotation.y + 10
-         })
-    }
-}
-gui
-.addColor(parameters, 'color')
-.onChange(()=>{
-    material.color.set(parameters.color)
-})
-gui
-.add(parameters, 'spin')
 // Scene
 const scene = new THREE.Scene()
 
@@ -42,27 +30,9 @@ const scene = new THREE.Scene()
  * Object
  */
 const geometry = new THREE.BoxGeometry(1, 1, 1)
-const material = new THREE.MeshBasicMaterial({ color: parameters.color })
+const material = new THREE.MeshBasicMaterial({ color: 0xff0000 })
 const mesh = new THREE.Mesh(geometry, material)
-mesh.visible = false
 scene.add(mesh)
-
-//DEBUG
-//gui objectlerle çalışıyor
-gui
-.add(mesh.position, 'x')
-.min(-3)
-.max(3)
-.step(0.01)
-.name("kırmızı küp X")
-// gui.add(mesh.position, 'y',-3,3,0.01)
-// gui.add(mesh.position, 'z',-3,3,0.01)
-gui
-.add(mesh, 'visible')
-gui
-.add(material, 'wireframe')
-gui
-.addColor
 
 /**
  * Sizes
@@ -92,7 +62,9 @@ window.addEventListener('resize', () =>
  */
 // Base camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
-camera.position.z = 3
+camera.position.x = 1
+camera.position.y = 1
+camera.position.z = 1
 scene.add(camera)
 
 // Controls
@@ -105,6 +77,7 @@ controls.enableDamping = true
 const renderer = new THREE.WebGLRenderer({
     canvas: canvas
 })
+renderer.outputColorSpace = THREE.LinearSRGBColorSpace
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
