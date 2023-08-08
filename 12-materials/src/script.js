@@ -1,45 +1,8 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
-
-
-// console.log(imageSource);
 THREE.ColorManagement.enabled = false
 
-/*
-TEXTURES
-*/
-// const image = new Image()
-// const texture = new THREE.Texture(image)
-
-// image.onload = ()=>{
-// texture.needsUpdate = true
-// }
-
-// image.src ='/textures/door/color.jpg'
-
-const textureLoader = new THREE.TextureLoader()
-const colorTexture = textureLoader.load(
-    '/textures/minecraft.png',
-    // ()=>{
-    //     console.log("load");
-    // },
-    // ()=>{
-    //     console.log("progress");
-        
-    // },
-    // ()=>{
-    //     console.log("error");
-        
-    // }
-    )
-//png kullanırken tinypng ile dosyayı küçültebiliriz 
-// colorTexture.rotation =Math.PI * 0.5
-// yakınlaşınca blurlaşıyor ve görsel textura oturmuyor ise nearest filter
-// colorTexture.minFilter= THREE.NearestFilter
-//her tarafı keskin minecraft bloğu gibi istiyorsak alttaki gibi
-//nearest filterlar daha iyi performans verir
-colorTexture.magFilter= THREE.NearestFilter
 /**
  * Base
  */
@@ -48,15 +11,6 @@ const canvas = document.querySelector('canvas.webgl')
 
 // Scene
 const scene = new THREE.Scene()
-
-/**
- * Object
- */
-const geometry = new THREE.BoxGeometry(1, 1, 1)
-console.log(geometry.attributes.uv);
-const material = new THREE.MeshBasicMaterial({ map: colorTexture })
-const mesh = new THREE.Mesh(geometry, material)
-scene.add(mesh)
 
 /**
  * Sizes
@@ -88,7 +42,7 @@ window.addEventListener('resize', () =>
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
 camera.position.x = 1
 camera.position.y = 1
-camera.position.z = 1
+camera.position.z = 2
 scene.add(camera)
 
 // Controls
