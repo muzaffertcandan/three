@@ -19,14 +19,44 @@ const scene = new THREE.Scene()
 /**
  * Lights
  */
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.5)
-scene.add(ambientLight)
+//ambient light her taraftan etki eder
+const ambientLight = new THREE.AmbientLight()
+ambientLight.color = new THREE.Color(0xffffff)
+ambientLight.intensity = 0.5
+// scene.add(ambientLight)
 
-const pointLight = new THREE.PointLight(0xffffff, 0.5)
-pointLight.position.x = 2
-pointLight.position.y = 3
-pointLight.position.z = 4
-scene.add(pointLight)
+//defaultta directional light tam tepeden vuruyor
+//ve sahnenin tam ortasını hedefler ışık
+const directionalLight = new THREE.DirectionalLight(0x00fffc, 0.3)
+directionalLight.position.set(1,0.25,0)
+// scene.add(directionalLight)
+
+const hemisphereLight = new THREE.HemisphereLight(0xff0000, 0x0000ff,0.3)
+scene.add(hemisphereLight)
+//decay ne kadar çabuk söndüğü değer ne kadar artarsa o kadar çabuk söner
+const pointLight = new THREE.PointLight(0xffffff, 0.5,6,0.3)
+pointLight.position.set(1,-0.5,1)
+// scene.add(pointLight)
+
+//sadece meshstandartMaterial ile çalışır
+const rectAreaLight = new THREE.RectAreaLight(0x4e00ff,2,1,1)
+rectAreaLight.position.set(-1.5,0,1.5)
+rectAreaLight.lookAt(new THREE.Vector3())
+// scene.add(rectAreaLight)
+
+//gerçek hayattaki spot ışığı gibi
+const spotLight = new THREE.SpotLight(0x78ff00, 0.5, 10, Math.PI * 0.1, 0.25, 1)
+spotLight.position.set(0 , 2, 3)
+// scene.add(spotLight)
+//ışıkları işlemek zordur bu yüzden olabildiğince az sayıda kullan
+//recthlight ve spotlight renderlanması daha zordur
+spotLight.target.position.x = -1
+scene.add(spotLight.target)
+
+const hemisphereLightHelper = new THREE.HemisphereLightHelper(hemisphereLight, 0.2)
+scene.add(hemisphereLightHelper)
+
+gui.add(hemisphereLight, 'intensity').min(0).max(1).step(0.01)
 
 /**
  * Objects
