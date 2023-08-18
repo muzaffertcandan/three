@@ -126,7 +126,10 @@ const sphereShadow = new THREE.Mesh(
     new THREE.PlaneBufferGeometry(1.5, 1.5),
     new THREE.MeshBasicMaterial(
         {
-            color:0xff0000,
+            color:0x000000,
+            transparent: true,
+            alphaMap: simpleShadow,
+             
         }
     )
 )
@@ -191,7 +194,13 @@ const clock = new THREE.Clock()
 const tick = () =>
 {
     const elapsedTime = clock.getElapsedTime()
-
+//update sphere
+    sphere.position.x = Math.cos(elapsedTime)* 1.5
+    sphere.position.z = Math.sin(elapsedTime) * 1.5
+    sphere.position.y = Math.abs(Math.sin(elapsedTime * 3 ))
+    sphereShadow.position.x = sphere.position.x
+    sphereShadow.position.z = sphere.position.z
+    sphereShadow.material.opacity = (1- sphere.position.y) * 0.5 
     // Update controls
     controls.update()
 
