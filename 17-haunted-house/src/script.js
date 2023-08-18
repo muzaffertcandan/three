@@ -13,14 +13,26 @@ const gui = new dat.GUI()
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
 
+
 // Scene
 const scene = new THREE.Scene()
-
+ 
+//FOG
+const fog = new THREE.Fog('#262837',1,15)
+scene.fog =fog
 /**
  * Textures
  */
 const textureLoader = new THREE.TextureLoader()
+const doorColorTexture = textureLoader.load('/textures/door/color.jpg')
+const doorAlphaTexture = textureLoader.load('/textures/door/alpha.jpg')
+const doorAmbientOcclusionTexture = textureLoader.load('/textures/door/ambientOcclusion.jpg')
+const doorHeightTexture = textureLoader.load('/textures/door/height.jpg')
+const doorNormalTexture = textureLoader.load('/textures/door/normal.jpg')
+const doorMetalnessTexture = textureLoader.load('/textures/door/metalness.jpg')
+const doorRoughnessTexture = textureLoader.load('/textures/door/roughness.jpg')
 
+console.log(doorColorTexture);
 /**
  * House
  */
@@ -29,11 +41,21 @@ const house = new THREE.Group()
 scene.add(house)
 //walls
 const walls = new THREE.Mesh(
-    new THREE.BoxBufferGeometry(4,2.5,4),
-    new THREE.MeshBasicMaterial({color: '#ac8e82'})
+    new THREE.BoxGeometry(4,2.5,4),
+    new THREE.MeshStandardMaterial({color: '#ac8e82'})
 )
 walls.position.y = 1.25
 house.add(walls)
+
+
+// Floor
+const floor = new THREE.Mesh(
+    new THREE.PlaneGeometry(20, 20),
+    new THREE.MeshStandardMaterial({ color: '#a9c388' })
+)
+floor.rotation.x = - Math.PI * 0.5
+floor.position.y = 0
+scene.add(floor)
 
 //roof
 const roof = new THREE.Mesh(
@@ -46,8 +68,20 @@ roof.rotation.y = Math.PI /4
 
 //Door
 const door = new THREE.Mesh(
-    new THREE.PlaneGeometry(2,2),
-    new THREE.MeshBasicMaterial({color: '#aa7b7b'})
+    new THREE.PlaneGeometry(2,2,100, 100),
+    new THREE.MeshStandardMaterial({
+        map: doorColorTexture,
+        transparent:true,
+        alphaMap: doorAlphaTexture,
+        aoMap: doorAmbientOcclusionTexture,
+        displacementMap : doorHeightTexture,
+        displacementScale: 0.1,
+        normalMap: doorNormalTexture,
+        metalnessMap: doorMetalnessTexture,
+        roughnessMap: doorRoughnessTexture
+
+
+    })
 )
 house.add(door)
 door.position.y = 1
@@ -82,30 +116,27 @@ const graves = new THREE.Group()
 scene.add(graves)
 
 //grave
- const graveGeometry = new THREE.BoxBufferGeometry(0.6,0.8,0.2)
+ const graveGeometry = new THREE.BoxGeometry(0.6,0.8,0.2)
  const graveMaterial = new THREE.MeshStandardMaterial({color: '#b2b6b1'})
 
 for(let i = 0; i< 50 ; i++){
-    const angle = Math.random() * Math.PI *2
+    const angle = Math.random() * Math.PI * 2
     const radius = 3 + Math.random() * 6
-    const x = Math.sin(angle)*radius
-    const z = Math.cos(angle)*radius
+
+    const x = Math.sin(angle) * radius
+    const z = Math.cos(angle) * radius
+
     const grave = new THREE.Mesh(graveGeometry, graveMaterial)
-    grave.position.y = Math.random() * 1
-    grave.position.set(x,0.4,z )
+    grave.position.set(x,0.3,z )
+    grave.rotation.y = (Math.random() - 0.5) * 0.4
+    grave.rotation.z = (Math.random() - 0.5) * 0.4
+    
     graves.add(grave)
 }
 
 
 
-// Floor
-const floor = new THREE.Mesh(
-    new THREE.PlaneGeometry(20, 20),
-    new THREE.MeshStandardMaterial({ color: '#a9c388' })
-)
-floor.rotation.x = - Math.PI * 0.5
-floor.position.y = 0
-scene.add(floor)
+
 
 
 
@@ -113,18 +144,23 @@ scene.add(floor)
  * Lights
  */
 // Ambient light
-const ambientLight = new THREE.AmbientLight('#ffffff', 0.5)
+const ambientLight = new THREE.AmbientLight('#b9d5ff', 0.12)
 gui.add(ambientLight, 'intensity').min(0).max(1).step(0.001)
 scene.add(ambientLight)
 
 // Directional light
-const moonLight = new THREE.DirectionalLight('#ffffff', 0.5)
+const moonLight = new THREE.DirectionalLight('#b9d5ff', 0.12)
 moonLight.position.set(4, 5, - 2)
 gui.add(moonLight, 'intensity').min(0).max(1).step(0.001)
 gui.add(moonLight.position, 'x').min(- 5).max(5).step(0.001)
 gui.add(moonLight.position, 'y').min(- 5).max(5).step(0.001)
 gui.add(moonLight.position, 'z').min(- 5).max(5).step(0.001)
 scene.add(moonLight)
+
+//door light
+const doorLight = new THREE.PointLight('#ff7d46',1,7)
+doorLight.position.set(0, 2.2, 2.7)
+house.add(doorLight)
 
 /**
  * Sizes
@@ -172,6 +208,7 @@ const renderer = new THREE.WebGLRenderer({
 renderer.outputColorSpace = THREE.LinearSRGBColorSpace
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+renderer.setClearColor('#262837')
 
 /**
  * Animate
