@@ -20,15 +20,78 @@ const scene = new THREE.Scene()
  * Textures
  */
 const textureLoader = new THREE.TextureLoader()
+const particleTexture = textureLoader.load('/textures/particles/2.png')
+const rick1ColorTexture = textureLoader.load('/textures/rick/rickand.png')
 
-/**
- * Test cube
- */
-const cube = new THREE.Mesh(
-    new THREE.BoxGeometry(1, 1, 1),
-    new THREE.MeshBasicMaterial()
+/*
+PARTİCLES
+*/
+const particlesGeometry =  new THREE.BufferGeometry()
+const count = 5000
+
+const positions = new Float32Array(count *3)
+const colors = new Float32Array(count *3)
+
+
+for(let i= 0; i< count*3;i++){
+    positions[i] = (Math.random() -0.5) *10
+    colors[i] = Math.random()
+}
+
+// particlesGeometry.setAttribute(
+//     'position',
+//     new THREE.BufferAttribute(positions,3)
+// )
+particlesGeometry.setAttribute(
+    'position',
+    new THREE. BufferAttribute(positions,3)
 )
-scene.add(cube)
+particlesGeometry.setAttribute(
+    'color',
+    new THREE. BufferAttribute(colors,3)
+)
+
+
+//MATERİAL
+
+const particlesMaterials = new THREE.PointsMaterial()
+particlesMaterials.size = 0.1
+//Parcacıklar uzaklaştığında küçülmesini sağlar performansı etkiler
+particlesMaterials.sizeAttenuation = true
+// particlesMaterials.color = new THREE.Color('#ff88cc')
+particlesMaterials.transparent = true
+particlesMaterials.alphaMap = particleTexture
+
+const cube = new THREE.Mesh(
+    new THREE.BoxGeometry(),
+    new THREE.MeshBasicMaterial({
+        map: rick1ColorTexture
+    })    
+)
+// scene.add(cube)
+
+//fixing alphas
+// 1 - alpha test
+// particlesMaterials.alphaTest = 0.001 
+
+//2- depth test
+// farklı cisimler konulduğunda gerçekliğini kaybeder hatalar oluşur
+// particlesMaterials.depthTest = false
+
+// 3-depth buffer
+particlesMaterials.depthWrite = false
+//blending (performansı etkiler) üst üste olan objelerin renklerini karıştırır ve ortaya tek renk çıkarır
+particlesMaterials.blending = THREE.AdditiveBlending
+//renk çoğaltmak için ekledik
+particlesMaterials.vertexColors = true
+
+
+
+//points
+const particles = new THREE.Points(particlesGeometry,particlesMaterials)
+scene.add(particles)
+
+
 
 /**
  * Sizes
@@ -84,6 +147,17 @@ const tick = () =>
 {
     const elapsedTime = clock.getElapsedTime()
 
+    //Update particles
+    // particles.rotation.y = elapsedTime * 0.2
+    // cube.rotation.y = -elapsedTime * 2
+    for(let i = 0; i < count; i++){
+        const i3 = i * 3
+        const x =  particlesGeometry.attributes.position.array[i3]
+        const y =  particlesGeometry.attributes.position.array[i3+1]
+        particlesGeometry.attributes.position.array[i3 + 1] = Math.sin(elapsedTime + x)
+    }
+
+    particlesGeometry.attributes.position.needsUpdate = true
     // Update controls
     controls.update()
 
