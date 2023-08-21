@@ -47,7 +47,14 @@ const walls = new THREE.Mesh(
 walls.position.y = 1.25
 house.add(walls)
 
-
+//windows
+const window1 = new THREE.Mesh(
+    new THREE.PlaneGeometry(1,1),
+    new THREE.MeshStandardMaterial({
+        color: '#121aed'
+    })
+)
+house.add(window1)
 // Floor
 const floor = new THREE.Mesh(
     new THREE.PlaneGeometry(20, 20),
