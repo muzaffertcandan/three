@@ -53,6 +53,7 @@ world.gravity.set(0,-9.82,0)
     }
  )
 world.addContactMaterial(defaultContactMaterial)
+world.defaultContactMaterial = defaultContactMaterial
 
 //sphere
 const sphereShape= new CANNON.Sphere(0.5)
