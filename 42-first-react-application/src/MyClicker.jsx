@@ -1,15 +1,16 @@
 import { useState, useEffect } from "react";
 
-export default function MyClicker() {
+export default function MyClicker({ keyName, keyColor= "blue"}) {
   //reactive data ile çalışmak
-    console.log("rendered")
+    console.log("props keyname", keyName)
+    console.log(keyColor);
   /* 
     Kolay yol
     */
 
     // normalde useState içine 0 yazabilirdik ancak sayfanın tekrar renderlanmaması için
     // local storage dan item çekilmesini yazdık bu sayede use efectin içinde tekrar renderlanmıyor
-  const [count, setCount] = useState(parseInt(localStorage.getItem("count") ?? 0));
+  const [count, setCount] = useState(parseInt(localStorage.getItem(keyName) ?? 0));
 
   /* 
     Saving the LOCAL STORAGE
@@ -21,14 +22,16 @@ export default function MyClicker() {
     // soru işaretlerinden sonra "0" rakamını koyarsak
     // null olduğunda 0 kabul et anlamına gelir
     // const savedCount = parseInt(localStorage.getItem("count") ?? 0);
-
+    return()=>{
+      localStorage.removeItem(keyName)
+    }
 }, []);
   // [] bize ne zaman çağıracağımızı söyler first renderda gelmesini istiyorsak
   // [] şeklinde boş array yapabiliriz, state değiştiğinde gelmesini istiyorsak,
   // hangi datanın değiştiğinde gelmesini istiyorsak onu [MYSTATE] şeklinde yerleştiriyoruz
   useEffect(() => {
     //local storage kaydı için = send to local storage
-    localStorage.setItem("count", count);
+    localStorage.setItem(keyName, count);
   }, [count]);
 
   /* 
@@ -57,7 +60,7 @@ export default function MyClicker() {
   return (
     <>
       <div>
-        <div>Click count: {count} </div>
+        <div style={{backgroundColor: keyColor}}>Click count: {count} </div>
         <button onClick={buttonClick}>Click here</button>
       </div>
     </>
