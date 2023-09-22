@@ -1,42 +1,68 @@
-import { useState } from "react";
+import { useState, useMemo, useRef } from "react";
 import MyClicker from "./MyClicker";
+import People from "./People";
 
-export default function App() {
+export default function App({ clickersCount, children }) {
   //Toggle clicker ile componenti yok etme
   let [hasClicker, setHasClicker] = useState(true);
-  let [displayed, setDisplayed] = useState("we are here");
+  const [count, setCount] = useState(0);
 
-  // const Clicked = () =>{
-  //   if(hasClicker){
-  //       setHasClicker( hasClicker = false)
-  //       setDisplayed(displayed = "Get the clicker")
-  //   }
-  //   else{
-  //       setHasClicker(hasClicker = true)
-  //       setDisplayed(displayed = "Delete Clicker")
-
-  //   }
-  // }
   const toggleClicker = () => {
     setHasClicker(!hasClicker);
   };
-  
+
+  const increment = () => {
+    setCount(count + 1);
+  };
+
+  // butonlara her basıldığında sayfadaki renk değişimlerini kontrol edicek
+  // useMemo(() => {
+  //   const colors = [];
+
+  //   for (let i = 0; i < clickersCount; i++) {
+  //     colors.push(`hsl(${Math.random() * 360}deg, 100%, 70%)`);
+  //   }
+  //   return colors;
+  // }, [clickersCount]);
+  // bir nevi cache olarak çalışıyor
+  const colors = useMemo(()=>{
+    const colors = [];
+
+    for (let i = 0; i < clickersCount; i++) 
+      colors.push(`hsl(${Math.random() * 360}deg, 100%, 70%)`);
+    return colors;
+  },[clickersCount])
+
+ 
+
+  // const tempArray = [...Array(clickersCount)]
+  // console.log(tempArray)
+
+  // tempArray.map((value, index)=>{
+  //   console.log(value, index)
+  // })
+
   return (
     <>
-      {/* {
-        hasClicker ? <MyClicker/> : "There is no clicker here dont search for it"
-    } */}
-
+      {children}
+      <h3>Total Count: {count}</h3>
       <button onClick={toggleClicker}>
         {hasClicker ? "Hide" : "show"} Clicker
       </button>
       {hasClicker && (
         <>
-          <MyClicker keyName="countA" keyColor={`hsl(${Math.random() *360}deg, 100%, 70%)`}/>
-          <MyClicker keyName="countB" keyColor={`hsl(${Math.random() *360}deg, 100%, 70%)`}/>
-          <MyClicker keyName="countC" keyColor={`hsl(${Math.random() *360}deg, 100%, 70%)`}/>
+          {[...Array(clickersCount)].map((value, index) => (
+            //içerisinde react icin key koyuyoruz
+            <MyClicker
+              key={index}
+              increment={increment}
+              keyName={`count${index}`}
+              keyColor={colors[index]}
+            />
+          ))}
         </>
       )}
+      <People/>
     </>
   );
 }

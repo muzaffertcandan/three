@@ -1,16 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
-export default function MyClicker({ keyName, keyColor= "blue"}) {
+export default function MyClicker({ increment,keyName, keyColor= "blue"}) {
   //reactive data ile çalışmak
-    console.log("props keyname", keyName)
-    console.log(keyColor);
+    // console.log("props keyname", keyName)
+    // console.log(keyColor);
   /* 
     Kolay yol
     */
-
     // normalde useState içine 0 yazabilirdik ancak sayfanın tekrar renderlanmaması için
     // local storage dan item çekilmesini yazdık bu sayede use efectin içinde tekrar renderlanmıyor
   const [count, setCount] = useState(parseInt(localStorage.getItem(keyName) ?? 0));
+
+  // USE REF HOOK
+  const buttonRef = useRef()
 
   /* 
     Saving the LOCAL STORAGE
@@ -22,6 +24,8 @@ export default function MyClicker({ keyName, keyColor= "blue"}) {
     // soru işaretlerinden sonra "0" rakamını koyarsak
     // null olduğunda 0 kabul et anlamına gelir
     // const savedCount = parseInt(localStorage.getItem("count") ?? 0);
+    buttonRef.current.style.backgroundColor = 'cyan'
+    buttonRef.current.style.color = "black"
     return()=>{
       localStorage.removeItem(keyName)
     }
@@ -52,7 +56,7 @@ export default function MyClicker({ keyName, keyColor= "blue"}) {
   const buttonClick = () => {
     // 1.yol
     setCount(count + 1);
-
+    increment()
     // 2.yol bu yol bize anlık value ile çalıştığımızdan emin olmamızı sağlıyor
     // setCount((value) => value + 1);
   };
@@ -61,7 +65,7 @@ export default function MyClicker({ keyName, keyColor= "blue"}) {
     <>
       <div>
         <div style={{backgroundColor: keyColor}}>Click count: {count} </div>
-        <button onClick={buttonClick}>Click here</button>
+        <button ref={buttonRef} onClick={buttonClick}>Click here</button>
       </div>
     </>
   );
